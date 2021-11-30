@@ -176,7 +176,7 @@ class HAProxySocket(object):
         stat_sock = self.connect()
         if stat_sock is None:
             return ''
-        stat_sock.sendall(command)
+        stat_sock.sendall(command.encode())
         result_buf = io.BytesIO()
         buf = stat_sock.recv(RECV_SIZE)
         while buf:
@@ -184,7 +184,7 @@ class HAProxySocket(object):
             buf = stat_sock.recv(RECV_SIZE)
 
         stat_sock.close()
-        return result_buf.getvalue()
+        return result_buf.getvalue().decode()
 
     def get_server_info(self):
         result = {}
