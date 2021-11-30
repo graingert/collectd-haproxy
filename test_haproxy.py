@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+from __future__ import print_function
+
 import collections
 from mock import MagicMock
 from mock import Mock
@@ -15,7 +17,7 @@ class MockCollectd(MagicMock):
 
     @staticmethod
     def log(log_str):
-        print log_str
+        print(log_str)
 
     debug = log
     info = log

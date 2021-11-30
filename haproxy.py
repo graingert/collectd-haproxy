@@ -8,12 +8,19 @@
 #
 # Modified by "Warren Turkal" <wt@signalfuse.com>, "Volodymyr Zhabiuk" <vzhabiuk@signalfx.com>
 
-import cStringIO as StringIO
+import io
 import socket
+import sys
 import csv
 import pprint
+import operator
 
 import collectd
+
+if sys.version_info >= (3, 0):
+    viewitems = operator.methodcaller("items")
+else:
+    viewitems = operator.methodcaller("viewitems")
 
 PLUGIN_NAME = 'haproxy'
 RECV_SIZE = 1024
@@ -170,7 +177,7 @@ class HAProxySocket(object):
         if stat_sock is None:
             return ''
         stat_sock.sendall(command)
-        result_buf = StringIO.StringIO()
+        result_buf = io.BytesIO()
         buf = stat_sock.recv(RECV_SIZE)
         while buf:
             result_buf.write(buf)
@@ -220,7 +227,7 @@ def get_stats(module_config):
         return stats
 
     # server wide stats
-    for key, val in server_info.iteritems():
+    for key, val in viewitems(server_info):
         try:
             stats.append((key, int(val), dict()))
         except (TypeError, ValueError):
@@ -349,7 +356,7 @@ def _format_dimensions(dimensions):
     str: Comma-separated list of dimensions
     """
 
-    dim_pairs = ["%s=%s" % (k, v) for k, v in dimensions.iteritems()]
+    dim_pairs = ["%s=%s" % (k, v) for k, v in viewitems(dimensions)]
     return "[%s]" % (",".join(dim_pairs))
 
 
